@@ -58,7 +58,7 @@ extension/ \
 - Inyecta resaltados/superposiciones de interfaz de usuario
 - Envía mensajes al fondo
 
-No se usa React aquí, TypeScript/JavaScript simple, Aquí es donde debe ir window.getSelection()
+•  No se usa React aquí  •  TypeScript/JavaScript simple  •  Aquí es donde debe ir window.getSelection()
 
 
 
