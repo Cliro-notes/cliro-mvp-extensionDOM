@@ -1,4 +1,4 @@
-# Frontend de Cliro Notes para el MVP
+# Frontend (Extension) de Cliro Notes para el MVP
 Este repositorio sirve para todo lo que modificara el DOM y todo lo que se use directamente de la extension o con lo que el usuario interactue. \
 Se desarrollara en JavaScript y React + Vite
 
