@@ -1,6 +1,6 @@
 # Frontend de Cliro Notes para el MVP
 Este repositorio sirve para todo lo que modificara el DOM y todo lo que se use directamente de la extension o con lo que el usuario interactue. \
-Se desarrollara en JavaScript y React + Vite \ \
+Se desarrollara en JavaScript y React + Vite
 
 ## Estructura / Arquitectura
 Buscar video en YT de Extensiones de Google con React \
