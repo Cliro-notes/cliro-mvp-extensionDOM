@@ -47,13 +47,12 @@ extension/ \
 └─ package.json \
 
 ### Qué es cada cosa?
-popup/ (Territorio React, es lo que aparece cuando el usuario da click al icono superior de la extension)
+**popup/ (Territorio React, es lo que aparece cuando el usuario da click al icono superior de la extension)**
 - Toda la interfaz de usuario
 - Toda la lógica React
 - Todos los ganchos
 
-content/ (Autoridad DOM)
-
+**content/ (Autoridad DOM)**
 - Lee el texto seleccionado
 - Inyecta resaltados/superposiciones de interfaz de usuario
 - Envía mensajes al fondo
@@ -62,8 +61,7 @@ content/ (Autoridad DOM)
 📌 TypeScript/JavaScript simple
 📌 Aquí es donde debe ir window.getSelection()
 
-background/ (Broker de confianza)
-
+**background/ (Broker de confianza)**
 - Almacena tokens de autenticación
 - Se comunica con FastAPI
 - Aplica limitación de velocidad
