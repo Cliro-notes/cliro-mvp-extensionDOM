@@ -1,5 +1,6 @@
 # Frontend de Cliro Notes para el MVP
-Este repositorio sirve para todo lo que modificara el DOM y todo lo que se use directamente de la extension o con lo que el usuario interactue.
+Este repositorio sirve para todo lo que modificara el DOM y todo lo que se use directamente de la extension o con lo que el usuario interactue. \
+Se desarrollara en JavaScript y React + Vite \ \
 
 ## Estructura / Arquitectura
 Buscar video en YT de Extensiones de Google con React \
@@ -53,6 +54,7 @@ _**popup/ (Territorio React, es lo que aparece cuando el usuario da click al ico
 - Todos los ganchos
 
 
+
 _**content/ (Autoridad DOM)**_
 - Lee el texto seleccionado
 - Inyecta resaltados/superposiciones de interfaz de usuario
@@ -63,8 +65,10 @@ _**content/ (Autoridad DOM)**_
 📌 Aquí es donde debe ir window.getSelection()
 
 
+
 _**background/ (Broker de confianza)**_
 - Almacena tokens de autenticación
 - Se comunica con FastAPI
 - Aplica limitación de velocidad
 - Recibe mensajes de popup/content
+
