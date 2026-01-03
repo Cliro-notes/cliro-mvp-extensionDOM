@@ -49,22 +49,22 @@ extension/ \
 
 ### Qué es cada cosa?
 📌 _**popup/ (Territorio React, es lo que aparece cuando el usuario da click al icono superior de la extension)**_
-- Toda la interfaz de usuario
-- Toda la lógica React
-- Todos los ganchos
+-> Toda la interfaz de usuario
+-> Toda la lógica React
+-> Todos los ganchos
 
 📌 _**content/ (Autoridad DOM)**_
-- Lee el texto seleccionado
-- Inyecta resaltados/superposiciones de interfaz de usuario
-- Envía mensajes al fondo
+-> Lee el texto seleccionado
+-> Inyecta resaltados/superposiciones de interfaz de usuario
+-> Envía mensajes al fondo
 
 •  No se usa React aquí  •  TypeScript/JavaScript simple  •  Aquí es donde debe ir window.getSelection()
 
 
 
 📌 _**background/ (Broker de confianza)**_
-- Almacena tokens de autenticación
-- Se comunica con FastAPI
-- Aplica limitación de velocidad
-- Recibe mensajes de popup/content
+-> Almacena tokens de autenticación
+-> Se comunica con FastAPI
+-> Aplica limitación de velocidad
+-> Recibe mensajes de popup/content
 
