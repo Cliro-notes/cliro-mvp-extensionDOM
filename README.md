@@ -2,6 +2,7 @@
 Este repositorio sirve para todo lo que modificara el DOM y todo lo que se use directamente de la extension o con lo que el usuario interactue.
 
 ## Estructura / Arquitectura
+Buscar video en YT de Extensiones de Google con React \
 Algo parecido a esto (consultar con ChatGPT, Deepseek, Gemini, etc): \
 extension/ \
 ├─ public/ \
@@ -44,3 +45,26 @@ extension/ \
 ├─ vite.config.ts \
 ├─ tsconfig.json \
 └─ package.json \
+
+### Qué es cada cosa?
+popup/ (Territorio React, es lo que aparece cuando el usuario da click al icono superior de la extension)
+- Toda la interfaz de usuario
+- Toda la lógica React
+- Todos los ganchos
+
+content/ (Autoridad DOM)
+
+- Lee el texto seleccionado
+- Inyecta resaltados/superposiciones de interfaz de usuario
+- Envía mensajes al fondo
+
+📌 No se usa React aquí
+📌 TypeScript/JavaScript simple
+📌 Aquí es donde debe ir window.getSelection()
+
+background/ (Broker de confianza)
+
+- Almacena tokens de autenticación
+- Se comunica con FastAPI
+- Aplica limitación de velocidad
+- Recibe mensajes de popup/content
