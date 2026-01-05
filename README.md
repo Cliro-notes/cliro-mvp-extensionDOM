@@ -6,38 +6,38 @@ Se desarrollara en JavaScript y React + Vite
 ```bash
 npm run build
 ``` 
-+ Chrome Extensions
+\+ Chrome Extensions
 
 **Qué hace?**
-- Genera el bundle final en dist/ \
-- Prepara el proyecto para Chrome (Manifest V3) \
+- Genera el bundle final en dist/ 
+- Prepara el proyecto para Chrome (Manifest V3)
 
 **Cómo se prueba?**
-- Ir a chrome://extensions \
-- Activar Developer Mode \
-- Load unpacked → seleccionar dist/ \
+- Ir a chrome://extensions
+- Activar Developer Mode
+- Load unpacked → seleccionar dist/
 
 **Qué ve el desarrollador?**
-- El popup real al hacer click en el icono \
-- El content script actuando dentro de páginas web \
-- El background ejecutándose en segundo plano \
+- El popup real al hacer click en el icono
+- El content script actuando dentro de páginas web
+- El background ejecutándose en segundo plano
 
 👉 Esta es la experiencia real del usuario final
 
----
 
+## Qué pasa si uso 'npm run dev'?
 ```bash
 npm run dev       → Para ejecutar de forma local
 ```
-**Qué hace?**
-- Levanta un servidor local con Vite (ej. localhost:5173) \
-- Sirve solo la UI del popup en modo desarrollo (Lo que ve el usuario al hacer clic en el icono de la extensión) \
+- Levanta un servidor local con Vite (ej. localhost:5173)
+- Sirve solo la UI del popup en modo desarrollo (Lo que ve el usuario al hacer clic en el icono de la extensión)
 
 **Qué NO ves al usar 'npm run dev'?**
-- Content scripts \
-- Background logic \
-- Comportamiento real dentro de páginas web (todo lo que modifica el DOM o la herramienta en si) \
+- Content scripts
+- Background logic
+- Comportamiento real dentro de páginas web (todo lo que modifica el DOM o la herramienta en si)
 
+---
 ## Estructura / Arquitectura
 Buscar video en YT de Extensiones de Google con React \
 ```bash
