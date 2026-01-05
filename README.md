@@ -4,9 +4,8 @@ Se desarrollara en JavaScript y React + Vite
 
 ## Cómo se ejecuta este proyecto?
 ```bash
-npm run build
+npm run build       → Ejecutar en Google Extensions
 ``` 
-\+ Chrome Extensions
 
 **Qué hace?**
 - Genera el bundle final en dist/ 
