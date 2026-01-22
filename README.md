@@ -2,6 +2,14 @@
 Este repositorio sirve para todo lo que modificara el DOM y todo lo que se use directamente de la extension o con lo que el usuario interactue. \
 Se desarrollara en JavaScript y React + Vite
 
+## Instalar dependencias:
+```bash
+npm install lucide-react
+npm install --save-dev terser
+npm install --save-dev esbuild
+npm install axios
+```
+
 ## Cómo se ejecuta este proyecto?
 ```bash
 npm run build       → Ejecutar en Google Extensions

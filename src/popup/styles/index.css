@@ -1,1 +1,68 @@
+/* src/popup/styles/index.css */
 @import "tailwindcss";
+
+/* Updated CSS with proper variables and sticky background */
+:root {
+    --color-dark: #0d0906;
+    --color-neutral: #7d7d7d;
+    --color-light: #ffffff;
+    --color-status-good: #10b981;
+    --color-status-warning: #f59e0b;
+    --color-status-attention: #ef4444;
+}
+
+/* For Tailwind v4+ */
+@theme {
+    --color-dark: var(--color-dark);
+    --color-neutral: var(--color-neutral);
+    --color-light: var(--color-light);
+    --color-status-good: var(--color-status-good);
+    --color-status-warning: var(--color-status-warning);
+    --color-status-attention: var(--color-status-attention);
+
+    /* Additional theme variables for consistency */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+    --shadow-md: 0 10px 20px rgba(0, 0, 0, 0.1);
+
+    --transition-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --duration-200: 200ms;
+    --duration-300: 300ms;
+}
+
+/* Ensure background elements stay fixed */
+.bg-fixed-elements {
+    position: fixed !important;
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+/* Smooth transitions */
+.transition-smooth {
+    transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Custom scrollbar for consistency */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-neutral);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-dark);
+}

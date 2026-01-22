@@ -1,16 +1,20 @@
+import { COLORS } from './src/shared/constants/colors.js';
+
 export default {
   content: [
-    "./index.html",
-    "./src/**/*.{js,jsx}",
+    './index.html',
+    './src/popup/**/*.{js,jsx}',
   ],
   theme: {
     extend: {
       colors: {
-        black: "#0b0b0b",
-        gray: {
-          50: "#fafafa",
-          900: "#18181b",
-        },
+        // Map COLORS JS to Tailwind
+        dark: COLORS.dark,
+        neutral: COLORS.neutral,
+        light: COLORS.light,
+        'status-good': COLORS.statusGood,
+        'status-warning': COLORS.statusWarning,
+        'status-attention': COLORS.statusAttention,
       },
     },
   },

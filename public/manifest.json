@@ -4,34 +4,32 @@
   "description": "AI-powered writing and understanding assistant",
   "version": "0.1.0",
 
-  "action": {
-    "default_popup": "popup/index.html",
-    "default_icon": {
-      "16": "icons/icon1.png",
-      "48": "icons/icon2.png",
-      "128": "icons/icon3.png"
-    }
-  },
-
   "background": {
-    "service_worker": "background/index.js",
+    "service_worker": "background.js",
     "type": "module"
   },
-
+  
+  "permissions": [
+    "activeTab"
+  ],
+  
+  "action": {
+    "default_popup": "index.html"
+  },
+  
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content/index.js"]
+      "js": ["content.js"],
+      "run_at": "document_end",
+      "type": "module"
     }
   ],
-
-  "permissions": [
-    "storage",
-    "activeTab",
-    "scripting"
-  ],
-
-  "host_permissions": [
-    "<all_urls>"
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["/icons/confusedCliro.png", "/icons/cliro.png", "chunks/*"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }

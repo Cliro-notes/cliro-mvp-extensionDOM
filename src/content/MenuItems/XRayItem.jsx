@@ -1,0 +1,58 @@
+import { MenuItem } from "./MenuItem";
+import { SubItem } from "./SubItem";
+import { COLORS, OPACITY, SPACING, RADIUS, ANIMATION } from "../../shared/constants/colors.js";
+
+export const XRayItem = ({ xrayOn, onToggle, errors = 12 }) => {
+    const errorBadge = xrayOn ? (
+        <div style={{
+            minWidth: '22px',
+            height: '22px',
+            borderRadius: '11px',
+            background: COLORS.statusAttention,
+            color: COLORS.light,
+            fontSize: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            animation: 'pulse 1.5s infinite'
+        }}>
+            {errors}
+        </div>
+    ) : null;
+
+    const toggleStyle = {
+        width: '36px',
+        height: '18px',
+        borderRadius: '9px',
+        background: xrayOn ? COLORS.dark : COLORS.neutral,
+        position: 'relative'
+    };
+
+    const toggleHandleStyle = {
+        width: '14px',
+        height: '14px',
+        borderRadius: '50%',
+        background: COLORS.light,
+        position: 'absolute',
+        top: '2px',
+        left: xrayOn ? '20px' : '2px',
+        transition: 'left 0.2s'
+    };
+
+    return (
+        <MenuItem
+            id="xray"
+            icon="xray"
+            label="X-Ray"
+            hasSubmenu
+            badge={errorBadge}
+        >
+            <SubItem id="xray-toggle" onClick={onToggle}>
+                <div style={{ flex: 1 }}>X-Ray {xrayOn ? "ON" : "OFF"}</div>
+                <div style={toggleStyle}>
+                    <div style={toggleHandleStyle} />
+                </div>
+            </SubItem>
+        </MenuItem>
+    );
+};
