@@ -67,6 +67,7 @@ class ContextManager {
 
         const nextContext = {
             text: selectedText || this.getPageText(),
+            selectedText: selectedText,
             isSelected: Boolean(selectedText),
             selectionTopPosition: selectedText
                 ? this.getSelectionTopPosition()
@@ -143,6 +144,7 @@ function initBubble() {
             <React.StrictMode>
                 {context.selectionTopPosition && (
                     <SelectionLabel
+                        selectedText={context.selectedText}
                         x={context.selectionTopPosition.x}
                         y={context.selectionTopPosition.y}
                     />

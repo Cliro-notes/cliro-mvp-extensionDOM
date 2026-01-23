@@ -32,11 +32,11 @@ export const BUBBLE_MENU_ITEMS = {
     action: "TRANSLATE",
   },
 
-  power: {
-    id: "power",
-    icon: "power",
-    label: "Apagar",
-    action: "POWER_OFF",
+  sleep: {
+    id: "sleep",
+    icon: "sleep",
+    label: "Dormir",
+    action: "SLEEP",
     requiresText: false,
   },
 };

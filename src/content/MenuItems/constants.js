@@ -4,7 +4,7 @@ export const icons = {
     explain: "?",
     rewrite: "✎",
     translate: "⇄",
-    power: "⏻"
+    sleep: "𝗓ᶻ",
 };
 
 export const rewriteOptions = [

@@ -8,7 +8,7 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
     const [dragging, setDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [isHovering, setIsHovering] = useState(false);
-    const [allowAutoClose, setAllowAutoClose] = useState(true); // Controls if hover can auto-close
+    const [allowAutoClose, setAllowAutoClose] = useState(true);
 
     const bubbleRef = useRef();
     const dragOffset = useRef({ x: 0, y: 0 });

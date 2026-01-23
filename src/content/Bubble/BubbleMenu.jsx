@@ -7,7 +7,7 @@ import { RewriteItem } from "../MenuItems/RewriteItem.jsx";
 import { TranslateItem } from "../MenuItems/TranslateItem.jsx";
 import { MenuItem } from "../MenuItems/MenuItem.jsx";
 
-import { LoadingAnimation } from '../MenuItems/Loading.jsx';
+import LoadingAnimation from "../MenuItems/LoadingAnimation.jsx";
 import { TextPreview } from './TextPreview.jsx';
 import { ResponseDisplay } from './ResponseDisplay.jsx';
 import { sendAIRequest } from "../../shared/api.js";
@@ -79,14 +79,12 @@ export function BubbleMenu({ originalText, onClose }) {
                     <RewriteItem hasText={hasText} onOptionClick={handleRewriteOption} />
                     <TranslateItem hasText={hasText} onLanguageClick={handleLanguageClick} />
 
-                    {!hasText && (
-                        <MenuItem
-                            id={BUBBLE_MENU_ITEMS.power.id}
-                            icon={BUBBLE_MENU_ITEMS.power.icon}
-                            label={BUBBLE_MENU_ITEMS.power.label}
-                            onClick={onClose}
-                        />
-                    )}
+                    <MenuItem
+                        id={BUBBLE_MENU_ITEMS.sleep.id}
+                        icon={BUBBLE_MENU_ITEMS.sleep.icon}
+                        label={BUBBLE_MENU_ITEMS.sleep.label}
+                        onClick={onClose}
+                    />
                 </div>
             )}
         </div>
