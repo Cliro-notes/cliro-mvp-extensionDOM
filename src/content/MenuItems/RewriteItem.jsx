@@ -1,6 +1,6 @@
 import { MenuItem } from "./MenuItem";
 import { SubItem } from "./SubItem";
-import { rewriteOptions } from "./constants";
+import { rewriteOptions, getIcon } from "./constants.js";
 
 export const RewriteItem = ({ hasText, onOptionClick }) => {
     const label = hasText ? "Reescribir" : "Reescribir Todo";
@@ -8,7 +8,7 @@ export const RewriteItem = ({ hasText, onOptionClick }) => {
     return (
         <MenuItem
             id="rewrite"
-            icon="rewrite"
+            icon={getIcon("rewrite")} // Usar getIcon
             label={label}
             hasSubmenu
         >
@@ -20,7 +20,7 @@ export const RewriteItem = ({ hasText, onOptionClick }) => {
                     <SubItem
                         key={option.id}
                         id={`rewrite-${option.id}`}
-                        onClick={() => onOptionClick?.(option)}
+                        onClick={() => onOptionClick?.(option.label)} // Pasar solo el label
                     >
                         {option.label}
                     </SubItem>

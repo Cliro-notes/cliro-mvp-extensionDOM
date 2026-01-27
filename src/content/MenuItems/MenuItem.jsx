@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { Icon } from "./Icon";
+import { getIcon } from "./constants.js"; // AÑADIR ESTA IMPORTACIÓN
 import { COLORS, OPACITY, SPACING, RADIUS, ANIMATION } from "../../shared/constants/colors.js";
 
 export const MenuItem = ({ id, icon, label, hasSubmenu, badge, onClick, children, variant = 'dark' }) => {
@@ -88,7 +89,21 @@ export const MenuItem = ({ id, icon, label, hasSubmenu, badge, onClick, children
                 }}
                 style={containerStyle}
             >
-                <Icon type={icon} color={variant === 'dark' ? COLORS.dark : COLORS.light} />
+                {/* Renderizar icono */}
+                {typeof icon === 'string' ? (
+                    <span style={{
+                        color: variant === 'dark' ? COLORS.dark : COLORS.light,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '16px',
+                        height: '16px'
+                    }}>
+                        {getIcon(icon)} {/* Ahora getIcon está definido */}
+                    </span>
+                ) : (
+                    <Icon type={icon} color={variant === 'dark' ? COLORS.dark : COLORS.light} />
+                )}
                 <span style={textStyle}>{label}</span>
                 {badge}
                 {hasSubmenu && <span style={chevronStyle}>›</span>}

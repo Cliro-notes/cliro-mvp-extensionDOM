@@ -1,6 +1,6 @@
 import { MenuItem } from "./MenuItem";
 import { SubItem } from "./SubItem";
-import { languages } from "./constants";
+import { languages, getIcon } from "./constants.js";
 
 export const TranslateItem = ({ hasText, onLanguageClick }) => {
     const label = hasText ? "Traducir" : "Traducir Todo";
@@ -8,7 +8,7 @@ export const TranslateItem = ({ hasText, onLanguageClick }) => {
     return (
         <MenuItem
             id="translate"
-            icon="translate"
+            icon={getIcon("translate")} // Usar getIcon
             label={label}
             hasSubmenu
         >
@@ -18,7 +18,7 @@ export const TranslateItem = ({ hasText, onLanguageClick }) => {
                     <SubItem
                         key={lang.lang}
                         id={`translate-${lang.lang}`}
-                        onClick={() => onLanguageClick?.(lang)}
+                        onClick={() => onLanguageClick?.(lang.code)} // Pasar solo el código
                     >
                         <span style={{ flex: 1 }}>{lang.name}</span>
                         <span style={{ fontSize: 12, opacity: 0.5 }}>{lang.code}</span>

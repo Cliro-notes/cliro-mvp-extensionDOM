@@ -1,22 +1,5 @@
-import { useState } from 'react';
-import {
-  Settings,
-  Crown,
-  User,
-  LogOut,
-  Globe,
-  Power,
-  RefreshCw,
-  Scan,
-  Languages,
-  Sparkles,
-  Bell,
-  Play,
-  Star,
-  Bug,
-  MessageSquare,
-  ChevronDown,
-} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Settings, Crown, User, LogOut, Globe, Power, RefreshCw, Scan, Languages, Sparkles, Bell, Play, Star, Bug, MessageSquare, ChevronDown, Eye, EyeOff } from 'lucide-react';
 
 import { BackgroundElements } from './components/BackgroundElements';
 import { GrammarAlert } from './components/GrammarAlert';
@@ -24,6 +7,7 @@ import { Switch } from './components/ui/Switch';
 import { Button } from './components/ui/Button';
 import { Dropdown } from './components/ui/Dropdown';
 import { MenuItemPopup } from './components/ui/MenuItemPopup';
+import { StateService } from '../shared/stateService';
 
 export default function App() {
   const [xrayMode, setXrayMode] = useState(false);
@@ -33,6 +17,34 @@ export default function App() {
   const [isPro, setIsPro] = useState(false);
   const [isExtensionOn, setIsExtensionOn] = useState(true);
   const [isTipsOpen, setIsTipsOpen] = useState(false);
+  const [bubbleVisible, setBubbleVisible] = useState(true);
+
+  // Cargar visibilidad de la burbuja al iniciar
+  useEffect(() => {
+    const loadBubbleVisibility = async () => {
+      try {
+        const visible = await StateService.getBubbleVisibility();
+        setBubbleVisible(visible);
+      } catch (error) {
+        console.error('Error loading bubble visibility:', error);
+        setBubbleVisible(true); // Default to visible on error
+      }
+    };
+    loadBubbleVisibility();
+  }, []);
+
+  // Manejar toggle de visibilidad de la burbuja
+  const handleToggleBubbleVisibility = async () => {
+    const newVisibility = !bubbleVisible;
+    setBubbleVisible(newVisibility);
+    try {
+      await StateService.setBubbleVisibility(newVisibility);
+    } catch (error) {
+      console.error('Error toggling bubble visibility:', error);
+      // Revertir el estado si hay error
+      setBubbleVisible(!newVisibility);
+    }
+  };
 
   const languages = [
     { code: 'en', name: 'English' },
@@ -162,6 +174,41 @@ export default function App() {
       <div className="p-6 space-y-5 relative z-10">
         <GrammarAlert errorCount={grammarErrors} />
 
+        {/* Bubble Visibility Toggle */}
+        <div className="bg-light/90 backdrop-blur-sm border border-neutral/20 rounded-lg p-4 hover:border-neutral/30 transition-colors duration-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${bubbleVisible ? 'bg-dark/10' : 'bg-neutral/10'}`}>
+                {bubbleVisible ? (
+                  <Eye className="w-4 h-4 text-dark" />
+                ) : (
+                  <EyeOff className="w-4 h-4 text-neutral" />
+                )}
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-dark">Assistant Bubble</span>
+                  <div className="relative group">
+                    <div className="w-3 h-3 bg-dark text-light rounded-full flex items-center justify-center text-[8px] font-bold cursor-help">
+                      i
+                    </div>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-dark text-light text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                      Toggle the floating assistant bubble
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-dark" />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-neutral mt-0.5">Show/hide the floating assistant</p>
+              </div>
+            </div>
+            <Switch
+              checked={bubbleVisible}
+              onChange={handleToggleBubbleVisibility}
+              disabled={!isExtensionOn}
+            />
+          </div>
+        </div>
+
         {/* X-ray Mode */}
         <div className="bg-light/90 backdrop-blur-sm border border-neutral/20 rounded-lg p-4 hover:border-neutral/30 transition-colors duration-200">
           <div className="flex items-center justify-between">
@@ -265,7 +312,7 @@ export default function App() {
 
           {isTipsOpen && (
             <div className="p-3 border-t border-neutral/20">
-              <div className="space-y-1"> {/* Reduced spacing */}
+              <div className="space-y-1">
                 <div className="hover:bg-dark/5 rounded-lg transition-colors duration-200">
                   <MenuItemPopup
                     icon={Play}

@@ -1,5 +1,6 @@
 import { MenuItem } from "./MenuItem";
 import { SubItem } from "./SubItem";
+import { getIcon } from "./constants.js";
 import { COLORS, OPACITY, SPACING, RADIUS, ANIMATION } from "../../shared/constants/colors.js";
 
 export const XRayItem = ({ xrayOn, onToggle, errors = 12 }) => {
@@ -42,7 +43,7 @@ export const XRayItem = ({ xrayOn, onToggle, errors = 12 }) => {
     return (
         <MenuItem
             id="xray"
-            icon="xray"
+            icon={getIcon("xray")} // Usar getIcon
             label="X-Ray"
             hasSubmenu
             badge={errorBadge}

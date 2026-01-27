@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { BubbleMenu } from "./BubbleMenu.jsx";
+import { StateService } from "../../shared/stateService.js";
 import { COLORS, OPACITY, SPACING, RADIUS, TYPOGRAPHY, ANIMATION, SHADOWS } from "../../shared/constants/colors.js";
 
 export default function Bubble({ isSelected, originalText, getImageUrl, onOpenChange }) {
@@ -9,25 +10,56 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [isHovering, setIsHovering] = useState(false);
     const [allowAutoClose, setAllowAutoClose] = useState(true);
+    const [isBubbleVisible, setIsBubbleVisible] = useState(true);
 
     const bubbleRef = useRef();
     const dragOffset = useRef({ x: 0, y: 0 });
     const hoverTimeoutRef = useRef(null);
     const clickOutsideTimeoutRef = useRef(null);
 
+    // Cargar y escuchar cambios en la visibilidad de la burbuja
+    useEffect(() => {
+        // Cargar estado inicial
+        const loadVisibility = async () => {
+            try {
+                const visible = await StateService.getBubbleVisibility();
+                setIsBubbleVisible(visible);
+            } catch (error) {
+                console.error('Error loading bubble visibility:', error);
+                setIsBubbleVisible(true); // Default to visible on error
+            }
+        };
+        loadVisibility();
+
+        // Escuchar cambios en tiempo real
+        const cleanupListener = StateService.onVisibilityChanged((isVisible) => {
+            setIsBubbleVisible(isVisible);
+
+            // Si la burbuja se oculta y está abierta, cerrarla
+            if (!isVisible && open) {
+                setOpen(false);
+                onOpenChange?.(false);
+                setAllowAutoClose(true);
+            }
+        });
+
+        return cleanupListener;
+    }, [open, onOpenChange]);
+
     // Hover effect - open on hover
     useEffect(() => {
+        if (!isBubbleVisible) return; // Si no es visible, no hacer nada
+
         if (isHovering && !open && allowAutoClose) {
             hoverTimeoutRef.current = setTimeout(() => {
                 setOpen(true);
                 onOpenChange?.(true);
-            }, 300); // 300ms delay before opening
+            }, 300);
         } else if (!isHovering && open && allowAutoClose) {
-            // Close when not hovering (with small delay to allow clicking inside)
             hoverTimeoutRef.current = setTimeout(() => {
                 setOpen(false);
                 onOpenChange?.(false);
-            }, 500); // 500ms delay before closing
+            }, 500);
         }
 
         return () => {
@@ -35,7 +67,7 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
                 clearTimeout(hoverTimeoutRef.current);
             }
         };
-    }, [isHovering, open, onOpenChange, allowAutoClose]);
+    }, [isHovering, open, onOpenChange, allowAutoClose, isBubbleVisible]);
 
     // Drag effect
     useEffect(() => {
@@ -64,7 +96,7 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
                 // Immediate close on click outside
                 setOpen(false);
                 onOpenChange?.(false);
-                setAllowAutoClose(true); // Re-enable auto-close after manual close
+                setAllowAutoClose(true);
 
                 // Clear any pending hover timeouts
                 if (hoverTimeoutRef.current) {
@@ -92,6 +124,7 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
     };
 
     const handleMouseEnter = () => {
+        if (!isBubbleVisible) return;
         setIsHovering(true);
         if (hoverTimeoutRef.current) {
             clearTimeout(hoverTimeoutRef.current);
@@ -103,6 +136,8 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
     };
 
     const handleClick = (e) => {
+        if (!isBubbleVisible) return;
+
         // If bubble is closed and user clicks (not drag), open it immediately
         if (!open && !dragging) {
             // Clear any pending hover timeout
@@ -112,7 +147,7 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
             // Open immediately on click
             setOpen(true);
             onOpenChange?.(true);
-            setAllowAutoClose(false); // Disable auto-close since user explicitly opened it
+            setAllowAutoClose(false);
         }
         e.stopPropagation();
     };
@@ -121,7 +156,7 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
     const handleManualClose = () => {
         setOpen(false);
         onOpenChange?.(false);
-        setAllowAutoClose(true); // Re-enable auto-close
+        setAllowAutoClose(true);
     };
 
     // Cleanup
@@ -137,11 +172,15 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
         };
     }, [onOpenChange]);
 
+    // Si la burbuja no es visible, no renderizar nada
+    if (!isBubbleVisible) {
+        return null;
+    }
+
     const bubbleImage = isSelected ?
         getImageUrl('/icons/confusedCliro.png') :
         getImageUrl('/icons/cliro.png');
 
-    // Inline styles using constants
     const styles = {
         container: {
             position: "fixed",
@@ -213,6 +252,7 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
                     <BubbleMenu
                         originalText={originalText}
                         onClose={handleManualClose}
+                        isSelected={isSelected}
                     />
                 )}
             </div>

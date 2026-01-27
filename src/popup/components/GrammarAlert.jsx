@@ -1,4 +1,3 @@
-// components/GrammarAlert.jsx
 import { AlertCircle } from 'lucide-react';
 
 export const GrammarAlert = ({ errorCount }) => {

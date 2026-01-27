@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { BUBBLE_MENU_ITEMS } from "../MenuItems/bubbleMenu.model.js";
+import {
+    BUBBLE_MENU_ITEMS,
+    rewriteOptions,
+    languages,
+    getIcon
+} from "../MenuItems/constants.js";
 
 import { XRayItem } from "../MenuItems/XRayItem.jsx";
 import { TextActionItem } from "../MenuItems/TextActionItem.jsx";
@@ -11,10 +16,10 @@ import LoadingAnimation from "../MenuItems/LoadingAnimation.jsx";
 import { TextPreview } from './TextPreview.jsx';
 import { ResponseDisplay } from './ResponseDisplay.jsx';
 import { sendAIRequest } from "../../shared/api.js";
-import { COLORS, OPACITY, SPACING, RADIUS, TYPOGRAPHY, ANIMATION } from "../../shared/constants/colors.js";
+import { StateService } from "../../shared/stateService.js";
+import { SPACING } from "../../shared/constants/colors.js";
 
-export function BubbleMenu({ originalText, onClose }) {
-    const hola = "What is Lorem Ipsum?\\nLorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
+export function BubbleMenu({ originalText, onClose, isSelected }) {
     const [loading, setLoading] = useState(false);
     const [response, setResponse] = useState(null);
     const [xrayOn, setXrayOn] = useState(true);
@@ -22,10 +27,16 @@ export function BubbleMenu({ originalText, onClose }) {
 
     const handleAction = async (action, payload) => {
         setLoading(true);
-        console.log("ACTION:", action, payload, originalText);
+        console.log("ACTION:", { action, payload, originalText });
         const aiResponse = await sendAIRequest(action, payload, originalText);
         setResponse(aiResponse);
         setLoading(false);
+    };
+
+    // NUEVO HANDLER PARA OCULTAR BURBUJA
+    const handleHideBubble = async () => {
+        await StateService.setBubbleVisibility(false);
+        onClose?.();
     };
 
     const handleToggleXray = (e) => {
@@ -35,11 +46,15 @@ export function BubbleMenu({ originalText, onClose }) {
     };
 
     const handleRewriteOption = (option) => {
-        handleAction("REWRITE", option);
+        const rewriteOption = rewriteOptions.find(opt => opt.label === option);
+        const payload = rewriteOption ? rewriteOption.id : option;
+        handleAction("REWRITE", payload);
     };
 
     const handleLanguageClick = (language) => {
-        handleAction("TRANSLATE", language);
+        const langObj = languages.find(lang => lang.code === language);
+        const payload = langObj ? langObj.lang : language;
+        handleAction("TRANSLATE", payload);
     };
 
     const handleCloseResponse = () => {
@@ -58,32 +73,44 @@ export function BubbleMenu({ originalText, onClose }) {
         <div onClick={(e) => e.stopPropagation()} style={styles.container}>
             {loading ? (
                 // <LoadingAnimation />
-                <ResponseDisplay response={hola} onClose={handleCloseResponse} />
+                <ResponseDisplay response={"HOLA ESTO ES UN TEST, DE UN TEXTO PEQUENO"} onClose={handleCloseResponse} />
             ) : response ? (
                 <ResponseDisplay response={response} onClose={handleCloseResponse} />
             ) : (
                 <div>
                     {hasText && <TextPreview text={originalText} />}
-                    <XRayItem xrayOn={xrayOn} onToggle={handleToggleXray} />
+
+                    <XRayItem
+                        xrayOn={xrayOn}
+                        onToggle={handleToggleXray}
+                    />
 
                     {BUBBLE_MENU_ITEMS.textActions.map(item => (
                         <TextActionItem
                             key={item.id}
                             id={item.id}
-                            icon={item.icon}
+                            icon={getIcon(item.icon)}
                             label={item.label(hasText)}
-                            onClick={() => handleAction(item.action, item)}
+                            onClick={() => handleAction(item.action, item.id)}
                         />
                     ))}
 
-                    <RewriteItem hasText={hasText} onOptionClick={handleRewriteOption} />
-                    <TranslateItem hasText={hasText} onLanguageClick={handleLanguageClick} />
+                    <RewriteItem
+                        hasText={hasText}
+                        onOptionClick={handleRewriteOption}
+                    />
 
+                    <TranslateItem
+                        hasText={hasText}
+                        onLanguageClick={handleLanguageClick}
+                    />
+
+                    {/* CAMBIAR "Ocultar" a "Hide Bubble" */}
                     <MenuItem
-                        id={BUBBLE_MENU_ITEMS.sleep.id}
-                        icon={BUBBLE_MENU_ITEMS.sleep.icon}
-                        label={BUBBLE_MENU_ITEMS.sleep.label}
-                        onClick={onClose}
+                        id={BUBBLE_MENU_ITEMS.active.id}
+                        icon={getIcon(BUBBLE_MENU_ITEMS.active.icon)}
+                        label="Hide Bubble" // Cambiar label
+                        onClick={handleHideBubble} // Usar nuevo handler
                     />
                 </div>
             )}

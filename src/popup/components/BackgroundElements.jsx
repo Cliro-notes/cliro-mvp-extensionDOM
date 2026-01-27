@@ -1,4 +1,3 @@
-// components/BackgroundElements.jsx
 import {
     Pencil,
     Notebook,
@@ -17,9 +16,9 @@ export const BackgroundElements = () => {
                 className="absolute inset-0"
                 style={{
                     backgroundImage: `
-            linear-gradient(to right, var(--color-neutral) 1px, transparent 1px),
-            linear-gradient(to bottom, var(--color-neutral) 1px, transparent 1px)
-          `,
+                        linear-gradient(to right, var(--color-neutral) 1px, transparent 1px),
+                        linear-gradient(to bottom, var(--color-neutral) 1px, transparent 1px)
+                    `,
                     backgroundSize: '20px 20px',
                 }}
             />
