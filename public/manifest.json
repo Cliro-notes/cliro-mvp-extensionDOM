@@ -29,7 +29,7 @@
   
   "web_accessible_resources": [
     {
-      "resources": ["/icons/confusedCliro.png", "/icons/cliro.png", "chunks/*"],
+      "resources": ["/icons/confusedCliro.png", "/icons/cliro.png", "popupBackground.png", "chunks/*"],
       "matches": ["<all_urls>"]
     }
   ]

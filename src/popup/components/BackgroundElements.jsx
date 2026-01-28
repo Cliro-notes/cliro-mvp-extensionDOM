@@ -1,3 +1,4 @@
+// /popup/components/BackgroundElements.jsx (como lo tienes)
 import {
     Pencil,
     Notebook,

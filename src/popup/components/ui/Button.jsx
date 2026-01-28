@@ -9,11 +9,11 @@ export const Button = ({
     iconPosition = 'left',
     ...props
 }) => {
-    const baseStyles = 'rounded-lg font-medium transition-all duration-200 flex items-center justify-center';
+    const baseStyles = 'rounded-lg font-medium transition-all duration-200 flex items-center justify-center animate-fade-in';
 
     const variants = {
-        primary: 'bg-dark text-light hover:bg-dark/90 disabled:opacity-30 disabled:cursor-not-allowed',
-        secondary: 'bg-light/10 text-dark border border-neutral/20 hover:bg-light/20 hover:text-dark disabled:opacity-30 disabled:cursor-not-allowed',
+        primary: 'bg-neutral/10 text-dark border border-neutral/30 hover:bg-neutral/20 hover:border-neutral/40 disabled:opacity-30 disabled:cursor-not-allowed animate-pulse-subtle',
+        secondary: 'bg-light/10 text-dark border border-neutral/20 hover:bg-light/20 hover:text-dark hover:border-neutral/30 disabled:opacity-30 disabled:cursor-not-allowed',
         ghost: 'bg-transparent text-dark hover:bg-light/10 disabled:opacity-30 disabled:cursor-not-allowed',
         bug: 'bg-light/10 text-dark border border-neutral/20 hover:text-red-600 hover:border-red-600/60 disabled:opacity-30 disabled:cursor-not-allowed',
         suggestion: 'bg-light/10 text-dark border border-neutral/20 hover:text-blue-600 hover:border-blue-600/60 disabled:opacity-30 disabled:cursor-not-allowed',

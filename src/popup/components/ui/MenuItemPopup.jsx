@@ -8,7 +8,7 @@ export const MenuItemPopup = ({
     badge,
     chevron,
     className = '',
-    variant = 'light',
+    variant = 'dark',
 }) => {
     const variantStyles = {
         light: {
@@ -19,7 +19,7 @@ export const MenuItemPopup = ({
             chevron: 'text-light/60',
         },
         dark: {
-            container: 'hover:bg-light/10 text-dark',
+            container: 'hover:bg-light/10 text-dark animate-fade-in',
             icon: 'text-dark',
             label: 'text-dark',
             subtext: 'text-neutral',
@@ -31,7 +31,7 @@ export const MenuItemPopup = ({
 
     return (
         <div
-            className={`flex items-center justify-between px-4 py-2.5 cursor-pointer transition-colors duration-150 text-sm ${styles.container} ${className}`}
+            className={`flex items-center justify-between px-4 py-2.5 cursor-pointer transition-all duration-150 text-sm ${styles.container} ${className}`}
             onClick={onClick}
         >
             <div className="flex items-center gap-3">

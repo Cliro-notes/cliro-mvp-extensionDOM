@@ -1,13 +1,53 @@
+// /content/SelectionLabel.jsx - CORREGIDO
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { COLORS, OPACITY, SPACING, RADIUS, TYPOGRAPHY, ANIMATION } from '../../shared/constants/colors.js';
 import LabelMenu from './LabelMenu.jsx';
+import { StateService } from '../../shared/stateService.js';
+import { EXTENSION_DEFAULT_ENABLED } from '../MenuItems/constants.js';
 
 export default function SelectionLabel({ x, y, selectedText }) {
     const [open, setOpen] = useState(false);
+    const [isExtensionEnabled, setIsExtensionEnabled] = useState(false);
     const openTimer = useRef(null);
     const closeTimer = useRef(null);
     const containerRef = useRef(null);
     const isHovered = useRef(false);
+
+    // Cargar y escuchar estado de la extensión
+    useEffect(() => {
+        const loadExtensionState = async () => {
+            try {
+                const enabled = await StateService.getExtensionEnabled();
+                setIsExtensionEnabled(enabled);
+
+                // Si extensión se deshabilita, cerrar label si está abierta
+                if (!enabled && open) {
+                    setOpen(false);
+                    clearTimeout(openTimer.current);
+                    clearTimeout(closeTimer.current);
+                }
+            } catch (error) {
+                console.error('Error loading extension state:', error);
+                setIsExtensionEnabled(EXTENSION_DEFAULT_ENABLED);
+            }
+        };
+
+        loadExtensionState();
+
+        // Escuchar cambios en estado de la extensión
+        const cleanup = StateService.onExtensionEnabledChanged((enabled) => {
+            setIsExtensionEnabled(enabled);
+
+            // Si extensión se deshabilita, cerrar label si está abierta
+            if (!enabled && open) {
+                setOpen(false);
+                clearTimeout(openTimer.current);
+                clearTimeout(closeTimer.current);
+            }
+        });
+
+        return cleanup;
+    }, [open]);
 
     /* ---------- CSS RESET ---------- */
     useEffect(() => {
@@ -52,6 +92,8 @@ export default function SelectionLabel({ x, y, selectedText }) {
 
     /* ---------- Hover logic ---------- */
     const handleMouseEnter = useCallback(() => {
+        if (!isExtensionEnabled) return;
+
         isHovered.current = true;
         clearTimeout(closeTimer.current);
         openTimer.current = setTimeout(() => {
@@ -59,7 +101,7 @@ export default function SelectionLabel({ x, y, selectedText }) {
                 setOpen(true);
             }
         }, 180);
-    }, []);
+    }, [isExtensionEnabled]);
 
     const handleMouseLeave = useCallback(() => {
         isHovered.current = false;
@@ -78,6 +120,30 @@ export default function SelectionLabel({ x, y, selectedText }) {
             clearTimeout(closeTimer.current);
         };
     }, []);
+
+    // Add fade-in animation for the menu
+    useEffect(() => {
+        const styleId = 'cliro-menu-animation';
+        if (document.getElementById(styleId)) return;
+
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateX(-8px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        return () => document.getElementById(styleId)?.remove();
+    }, []);
+
+    // MOVER EL RETURN NULL AL FINAL, DESPUÉS DE TODOS LOS HOOKS
+    // Si la extensión no está habilitada, no renderizar nada
+    if (!isExtensionEnabled) {
+        return null;
+    }
 
     const styles = {
         wrapper: {
@@ -136,24 +202,6 @@ export default function SelectionLabel({ x, y, selectedText }) {
             animation: `${ANIMATION.durationFast} ${ANIMATION.transitionSmooth} fadeIn`,
         },
     };
-
-    // Add fade-in animation for the menu
-    useEffect(() => {
-        const styleId = 'cliro-menu-animation';
-        if (document.getElementById(styleId)) return;
-
-        const style = document.createElement('style');
-        style.id = styleId;
-        style.textContent = `
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateX(-8px); }
-                to { opacity: 1; transform: translateX(0); }
-            }
-        `;
-        document.head.appendChild(style);
-
-        return () => document.getElementById(styleId)?.remove();
-    }, []);
 
     return (
         <div

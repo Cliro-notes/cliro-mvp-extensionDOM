@@ -3,8 +3,9 @@ import { SubItem } from "./SubItem";
 import { getIcon } from "./constants.js";
 import { COLORS, OPACITY, SPACING, RADIUS, ANIMATION } from "../../shared/constants/colors.js";
 
-export const XRayItem = ({ xrayOn, onToggle, errors = 12 }) => {
-    const errorBadge = xrayOn ? (
+export const XRayItem = ({ xrayEnabled, xrayErrorCount, onToggle }) => {
+    // El badge de errores solo se muestra si X-ray está habilitado
+    const errorBadge = xrayEnabled ? (
         <div style={{
             minWidth: '22px',
             height: '22px',
@@ -17,7 +18,7 @@ export const XRayItem = ({ xrayOn, onToggle, errors = 12 }) => {
             justifyContent: 'center',
             animation: 'pulse 1.5s infinite'
         }}>
-            {errors}
+            {xrayErrorCount}
         </div>
     ) : null;
 
@@ -25,7 +26,7 @@ export const XRayItem = ({ xrayOn, onToggle, errors = 12 }) => {
         width: '36px',
         height: '18px',
         borderRadius: '9px',
-        background: xrayOn ? COLORS.dark : COLORS.neutral,
+        background: xrayEnabled ? COLORS.dark : COLORS.neutral,
         position: 'relative'
     };
 
@@ -36,7 +37,7 @@ export const XRayItem = ({ xrayOn, onToggle, errors = 12 }) => {
         background: COLORS.light,
         position: 'absolute',
         top: '2px',
-        left: xrayOn ? '20px' : '2px',
+        left: xrayEnabled ? '20px' : '2px',
         transition: 'left 0.2s'
     };
 
@@ -49,7 +50,7 @@ export const XRayItem = ({ xrayOn, onToggle, errors = 12 }) => {
             badge={errorBadge}
         >
             <SubItem id="xray-toggle" onClick={onToggle}>
-                <div style={{ flex: 1 }}>X-Ray {xrayOn ? "ON" : "OFF"}</div>
+                <div style={{ flex: 1 }}>X-Ray {xrayEnabled ? "ON" : "OFF"}</div>
                 <div style={toggleStyle}>
                     <div style={toggleHandleStyle} />
                 </div>

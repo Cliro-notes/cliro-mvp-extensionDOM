@@ -1,7 +1,9 @@
+// Bubble.jsx - COMPLETO
 import { useState, useRef, useEffect } from "react";
 import { BubbleMenu } from "./BubbleMenu.jsx";
 import { StateService } from "../../shared/stateService.js";
 import { COLORS, OPACITY, SPACING, RADIUS, TYPOGRAPHY, ANIMATION, SHADOWS } from "../../shared/constants/colors.js";
+import { EXTENSION_DEFAULT_ENABLED } from "../MenuItems/constants.js";
 
 export default function Bubble({ isSelected, originalText, getImageUrl, onOpenChange }) {
     const [open, setOpen] = useState(false);
@@ -11,11 +13,41 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
     const [isHovering, setIsHovering] = useState(false);
     const [allowAutoClose, setAllowAutoClose] = useState(true);
     const [isBubbleVisible, setIsBubbleVisible] = useState(true);
+    const [isExtensionEnabled, setIsExtensionEnabled] = useState(false);
 
     const bubbleRef = useRef();
     const dragOffset = useRef({ x: 0, y: 0 });
     const hoverTimeoutRef = useRef(null);
     const clickOutsideTimeoutRef = useRef(null);
+
+    // Cargar y escuchar estado de la extensión
+    useEffect(() => {
+        const loadExtensionState = async () => {
+            try {
+                const enabled = await StateService.getExtensionEnabled();
+                setIsExtensionEnabled(enabled);
+            } catch (error) {
+                console.error('Error loading extension state:', error);
+                setIsExtensionEnabled(EXTENSION_DEFAULT_ENABLED);
+            }
+        };
+
+        loadExtensionState();
+
+        // Escuchar cambios en estado de la extensión
+        const cleanupExtensionListener = StateService.onExtensionEnabledChanged((isEnabled) => {
+            setIsExtensionEnabled(isEnabled);
+
+            // Si extensión se apaga, cerrar burbuja si está abierta
+            if (!isEnabled && open) {
+                setOpen(false);
+                onOpenChange?.(false);
+                setAllowAutoClose(true);
+            }
+        });
+
+        return cleanupExtensionListener;
+    }, [open, onOpenChange]);
 
     // Cargar y escuchar cambios en la visibilidad de la burbuja
     useEffect(() => {
@@ -26,13 +58,13 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
                 setIsBubbleVisible(visible);
             } catch (error) {
                 console.error('Error loading bubble visibility:', error);
-                setIsBubbleVisible(true); // Default to visible on error
+                setIsBubbleVisible(true);
             }
         };
         loadVisibility();
 
         // Escuchar cambios en tiempo real
-        const cleanupListener = StateService.onVisibilityChanged((isVisible) => {
+        const cleanupBubbleListener = StateService.onBubbleVisibilityChanged((isVisible) => {
             setIsBubbleVisible(isVisible);
 
             // Si la burbuja se oculta y está abierta, cerrarla
@@ -43,12 +75,21 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
             }
         });
 
-        return cleanupListener;
+        return () => {
+            cleanupBubbleListener?.();
+        };
     }, [open, onOpenChange]);
 
-    // Hover effect - open on hover
+    // Hover effect - open on hover (solo si extensión y burbuja están habilitadas)
     useEffect(() => {
-        if (!isBubbleVisible) return; // Si no es visible, no hacer nada
+        if (!isExtensionEnabled || !isBubbleVisible) {
+            // Si la extensión o burbuja están deshabilitadas, cerrar si está abierta
+            if (open) {
+                setOpen(false);
+                onOpenChange?.(false);
+            }
+            return;
+        }
 
         if (isHovering && !open && allowAutoClose) {
             hoverTimeoutRef.current = setTimeout(() => {
@@ -67,12 +108,12 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
                 clearTimeout(hoverTimeoutRef.current);
             }
         };
-    }, [isHovering, open, onOpenChange, allowAutoClose, isBubbleVisible]);
+    }, [isHovering, open, onOpenChange, allowAutoClose, isExtensionEnabled, isBubbleVisible]);
 
-    // Drag effect
+    // Drag effect (solo si extensión y burbuja están habilitadas)
     useEffect(() => {
         const move = (e) => {
-            if (dragging) {
+            if (dragging && isExtensionEnabled && isBubbleVisible) {
                 setPos({
                     x: e.clientX - dragOffset.current.x,
                     y: e.clientY - dragOffset.current.y,
@@ -87,7 +128,7 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
             window.removeEventListener("mousemove", move);
             window.removeEventListener("mouseup", up);
         };
-    }, [dragging]);
+    }, [dragging, isExtensionEnabled, isBubbleVisible]);
 
     // Click outside effect - closes bubble immediately
     useEffect(() => {
@@ -114,6 +155,9 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
 
     // Event handlers
     const handleMouseDown = (e) => {
+        // Verificar si extensión y burbuja están habilitadas
+        if (!isExtensionEnabled || !isBubbleVisible) return;
+
         const clickable = e.target.closest("[data-clickable], [data-submenu], [data-menu-item]");
         if (clickable) return;
 
@@ -124,7 +168,7 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
     };
 
     const handleMouseEnter = () => {
-        if (!isBubbleVisible) return;
+        if (!isExtensionEnabled || !isBubbleVisible) return;
         setIsHovering(true);
         if (hoverTimeoutRef.current) {
             clearTimeout(hoverTimeoutRef.current);
@@ -136,7 +180,7 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
     };
 
     const handleClick = (e) => {
-        if (!isBubbleVisible) return;
+        if (!isExtensionEnabled || !isBubbleVisible) return;
 
         // If bubble is closed and user clicks (not drag), open it immediately
         if (!open && !dragging) {
@@ -172,8 +216,8 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
         };
     }, [onOpenChange]);
 
-    // Si la burbuja no es visible, no renderizar nada
-    if (!isBubbleVisible) {
+    // Si la extensión no está habilitada O la burbuja no es visible, no renderizar
+    if (!isExtensionEnabled || !isBubbleVisible) {
         return null;
     }
 

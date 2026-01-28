@@ -1,9 +1,11 @@
-import { useState } from "react";
+// /content/BubbleMenu.jsx - MODIFICADO
+import { useState, useEffect } from "react"; // Añadir useEffect
 import {
     BUBBLE_MENU_ITEMS,
     rewriteOptions,
     languages,
-    getIcon
+    getIcon,
+    XRAY_DEFAULT_ERROR_COUNT
 } from "../MenuItems/constants.js";
 
 import { XRayItem } from "../MenuItems/XRayItem.jsx";
@@ -22,8 +24,45 @@ import { SPACING } from "../../shared/constants/colors.js";
 export function BubbleMenu({ originalText, onClose, isSelected }) {
     const [loading, setLoading] = useState(false);
     const [response, setResponse] = useState(null);
-    const [xrayOn, setXrayOn] = useState(true);
+    const [xrayEnabled, setXrayEnabled] = useState(false);
+    const [xrayErrorCount, setXrayErrorCount] = useState(XRAY_DEFAULT_ERROR_COUNT);
     const hasText = Boolean(originalText);
+
+    // Cargar estado inicial de X-ray
+    useEffect(() => {
+        const loadXrayState = async () => {
+            try {
+                const enabled = await StateService.getXrayEnabled();
+                const errorCount = await StateService.getXrayErrorCount();
+                setXrayEnabled(enabled);
+                setXrayErrorCount(errorCount);
+            } catch (error) {
+                console.error('Error loading X-ray state:', error);
+                setXrayEnabled(false);
+                setXrayErrorCount(XRAY_DEFAULT_ERROR_COUNT);
+            }
+        };
+
+        loadXrayState();
+    }, []);
+
+    // Escuchar cambios en X-ray enabled
+    useEffect(() => {
+        const cleanup = StateService.onXrayEnabledChanged((isEnabled) => {
+            setXrayEnabled(isEnabled);
+        });
+
+        return cleanup;
+    }, []);
+
+    // Escuchar cambios en X-ray error count
+    useEffect(() => {
+        const cleanup = StateService.onXrayErrorCountChanged((count) => {
+            setXrayErrorCount(count);
+        });
+
+        return cleanup;
+    }, []);
 
     const handleAction = async (action, payload) => {
         setLoading(true);
@@ -39,10 +78,20 @@ export function BubbleMenu({ originalText, onClose, isSelected }) {
         onClose?.();
     };
 
-    const handleToggleXray = (e) => {
+    const handleToggleXray = async (e) => {
         e?.stopPropagation();
-        setXrayOn(prev => !prev);
-        handleAction("XRAY_TOGGLE", { enabled: !xrayOn });
+        const newEnabledState = !xrayEnabled;
+
+        try {
+            // Actualizar StateService primero
+            await StateService.setXrayEnabled(newEnabledState);
+            setXrayEnabled(newEnabledState);
+
+            // Llamar a la API después
+            handleAction("XRAY_TOGGLE", { enabled: newEnabledState });
+        } catch (error) {
+            console.error('Error toggling X-ray:', error);
+        }
     };
 
     const handleRewriteOption = (option) => {
@@ -81,8 +130,9 @@ export function BubbleMenu({ originalText, onClose, isSelected }) {
                     {hasText && <TextPreview text={originalText} />}
 
                     <XRayItem
-                        xrayOn={xrayOn}
-                        onToggle={handleToggleXray}
+                        xrayEnabled={xrayEnabled}          // Cambiado de xrayOn
+                        xrayErrorCount={xrayErrorCount}   // Nuevo prop
+                        onToggle={handleToggleXray}       // Usa nuevo handler
                     />
 
                     {BUBBLE_MENU_ITEMS.textActions.map(item => (

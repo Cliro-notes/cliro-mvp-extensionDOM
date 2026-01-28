@@ -1,3 +1,14 @@
+// X-ray constants
+export const XRAY_DEFAULT_ENABLED = false;
+export const XRAY_DEFAULT_ERROR_COUNT = 12;
+export const XRAY_STORAGE_KEY = 'cliro_xray_enabled';
+export const XRAY_ERROR_COUNT_KEY = 'cliro_xray_error_count';
+
+// On / Off Feature
+export const EXTENSION_DEFAULT_ENABLED = true;
+export const EXTENSION_STORAGE_KEY = 'cliro_extension_enabled';
+
+// Menu Items and Icons
 export const icons = {
     xray: "◎",
     summary: "≡",
