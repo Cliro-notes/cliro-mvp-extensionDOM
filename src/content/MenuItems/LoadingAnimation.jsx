@@ -1,4 +1,4 @@
-export default function LoadingAnimation() {
+export function LoadingAnimation() {
     return (
         <div
             style={{

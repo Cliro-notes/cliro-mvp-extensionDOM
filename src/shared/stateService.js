@@ -1,4 +1,4 @@
-// En /shared/stateService.js - Añadir estos métodos:
+// /shared/stateService.js
 import { 
   XRAY_DEFAULT_ENABLED, 
   XRAY_DEFAULT_ERROR_COUNT,

@@ -1,4 +1,4 @@
-// components/initReactApp.js
+// content/Setup/initReactApp.js
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { injectCssVariables } from '../../shared/constants/colors.js';

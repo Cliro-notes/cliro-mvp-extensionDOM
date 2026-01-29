@@ -1,4 +1,4 @@
-// /content/SelectionLabel.jsx - CORREGIDO
+// /content/SelectionLabel.jsx
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { COLORS, OPACITY, SPACING, RADIUS, TYPOGRAPHY, ANIMATION } from '../../shared/constants/colors.js';
 import LabelMenu from './LabelMenu.jsx';

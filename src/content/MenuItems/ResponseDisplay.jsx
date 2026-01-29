@@ -1,11 +1,48 @@
-import { useState, useEffect } from 'react';
+// /content/MenuItems/ResponseDisplay.jsx
+import { useState, useEffect, useRef } from 'react';
 import { Copy, RefreshCw, ThumbsUp, X } from 'lucide-react';
 import { COLORS, OPACITY, SPACING, RADIUS, TYPOGRAPHY, ANIMATION, SHADOWS } from '../../shared/constants/colors.js';
 
-export function ResponseDisplay({ response, onClose }) {
+export function ResponseDisplay({
+    response,
+    onClose,
+    variant = 'bubble',
+    onBackToMenu
+}) {
     const [copyFeedback, setCopyFeedback] = useState(false);
     const [clickedButton, setClickedButton] = useState(null);
     const [likeFeedback, setLikeFeedback] = useState(false);
+    const containerRef = useRef(null);
+
+    // DEBUG: Verificar props
+    useEffect(() => {
+        console.log('ResponseDisplay mounted with:', {
+            onClose: typeof onClose,
+            onBackToMenu: typeof onBackToMenu,
+            variant
+        });
+    }, []);
+
+    // Only close on outside click - NO on mouse leave
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            // Solo cerrar si se hace click fuera Y el target no es parte de otro elemento Cliro
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                const isOtherCliroElement = e.target.closest('[data-cliro-element]');
+                if (!isOtherCliroElement) {
+                    console.log('Click outside detected, calling onClose');
+                    if (onClose && typeof onClose === 'function') {
+                        onClose();
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [onClose]);
 
     // Extract and clean text
     const getDisplayText = () => {
@@ -44,7 +81,7 @@ export function ResponseDisplay({ response, onClose }) {
         if (clickedButton) {
             const timer = setTimeout(() => {
                 setClickedButton(null);
-            }, 2000); // 2 seconds
+            }, 2000);
             return () => clearTimeout(timer);
         }
     }, [clickedButton]);
@@ -66,32 +103,78 @@ export function ResponseDisplay({ response, onClose }) {
         setLikeFeedback(!likeFeedback);
     };
 
-    // Inline styles object using constants
+    const handleClose = (e) => {
+        e?.stopPropagation();
+        console.log('Close button clicked - ResponseDisplay');
+
+        if (onBackToMenu && typeof onBackToMenu === 'function') {
+            console.log('Calling onBackToMenu');
+            onBackToMenu();
+        } else if (onClose && typeof onClose === 'function') {
+            console.log('Calling onClose');
+            onClose();
+        }
+    };
+
+    // Configuraciones por variante
+    const variantConfig = {
+        bubble: {
+            width: '260px',
+            maxHeight: '400px',
+            background: 'transparent',
+            borderRadius: RADIUS.xl,
+            padding: SPACING.sm,
+            boxShadow: 'none',
+            marginBottom: SPACING.sm,
+            textContainerMaxHeight: '280px',
+            layout: 'vertical',
+        },
+        label: {
+            width: '320px',
+            maxHeight: '300px',
+            background: COLORS.light,
+            borderRadius: RADIUS.lg,
+            padding: SPACING.md,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            marginBottom: '0',
+            textContainerMaxHeight: '180px',
+            layout: 'horizontal',
+        }
+    };
+
+    const config = variantConfig[variant];
+
+    // Inline styles object
     const styles = {
         container: {
             animation: `slideIn ${ANIMATION.durationNormal} ${ANIMATION.transitionSmooth}`,
-            marginBottom: SPACING.sm,
-            width: '100%',
-            maxWidth: '100%',
+            width: config.width,
+            maxHeight: config.maxHeight,
             display: 'flex',
             flexDirection: 'column',
             boxSizing: 'border-box',
-            background: 'transparent',
-            borderRadius: RADIUS.lg,
+            background: config.background,
+            borderRadius: config.borderRadius,
+            padding: config.padding,
+            boxShadow: config.boxShadow,
             overflow: 'hidden',
             color: COLORS.dark,
             fontFamily: TYPOGRAPHY.fontSans,
+            border: variant === 'label' ? `1px solid ${OPACITY.dark10}` : 'none',
+            position: 'relative',
+            zIndex: 2147483646,
         },
         header: {
-            padding: `${SPACING.md} ${SPACING.lg}`,
+            padding: `${SPACING.sm} ${SPACING.md}`,
             background: 'transparent',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexShrink: '0',
+            borderBottom: `1px solid ${OPACITY.dark10}`,
         },
         headerTitle: {
-            fontSize: TYPOGRAPHY.fontSizeMd,
+            fontSize: TYPOGRAPHY.fontSizeSm,
             fontWeight: '500',
             color: COLORS.dark,
             opacity: '0.95',
@@ -104,54 +187,56 @@ export function ResponseDisplay({ response, onClose }) {
             border: 'none',
             color: COLORS.neutral,
             cursor: 'pointer',
-            padding: SPACING.xs,
+            padding: '4px',
             borderRadius: RADIUS.md,
             transition: `all ${ANIMATION.durationFast} ${ANIMATION.transitionSmooth}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: '0',
+            width: '24px',
+            height: '24px',
         },
         content: {
             flex: '1',
-            padding: `0 ${SPACING.lg}`,
+            padding: variant === 'label' ? SPACING.md : `${SPACING.md} ${SPACING.lg}`,
             overflowY: 'auto',
             overflowX: 'hidden',
             background: 'transparent',
             boxSizing: 'border-box',
-            maxHeight: '280px',
+            maxHeight: config.textContainerMaxHeight,
             width: '100%',
         },
         textContainer: {
-            fontSize: TYPOGRAPHY.fontSizeMd,
-            lineHeight: '1.6',
+            fontSize: variant === 'label' ? TYPOGRAPHY.fontSizeSm : TYPOGRAPHY.fontSizeMd,
+            lineHeight: variant === 'label' ? '1.5' : '1.6',
             whiteSpace: 'pre-wrap',
             color: COLORS.dark,
-            background: OPACITY.neutral10,
-            padding: SPACING.lg,
-            borderRadius: RADIUS.md,
-            minHeight: '40px',
+            background: 'transparent',
+            padding: variant === 'label' ? '0' : '0',
+            borderRadius: '0',
+            minHeight: variant === 'label' ? '60px' : '40px',
             boxSizing: 'border-box',
             wordBreak: 'break-word',
             overflowWrap: 'break-word',
             width: '100%',
             maxWidth: '100%',
             wordWrap: 'break-word',
-            backdropFilter: 'blur(4px)',
         },
         footer: {
-            padding: `${SPACING.md} ${SPACING.lg}`,
-            background: 'transparent',
+            padding: `${SPACING.sm} ${SPACING.md}`,
+            background: variant === 'label' ? OPACITY.neutral5 : 'transparent',
             display: 'flex',
-            gap: SPACING.sm,
+            gap: SPACING.xs,
             justifyContent: 'space-between',
             flexWrap: 'nowrap',
             flexShrink: '0',
             width: '100%',
             boxSizing: 'border-box',
+            borderTop: `1px solid ${OPACITY.dark10}`,
         },
         buttonBase: {
-            padding: `${SPACING.sm} ${SPACING.md}`,
+            padding: `${SPACING.xs} ${SPACING.sm}`,
             borderRadius: RADIUS.md,
             fontSize: TYPOGRAPHY.fontSizeXs,
             cursor: 'pointer',
@@ -167,8 +252,8 @@ export function ResponseDisplay({ response, onClose }) {
             overflow: 'hidden',
             fontFamily: 'inherit',
             color: COLORS.dark,
-            background: 'transparent',
-            border: `1px solid ${OPACITY.dark20}`,
+            background: variant === 'label' ? OPACITY.neutral10 : 'transparent',
+            border: `1px solid ${variant === 'label' ? OPACITY.dark10 : OPACITY.dark20}`,
         },
         buttonText: {
             overflow: 'hidden',
@@ -183,23 +268,18 @@ export function ResponseDisplay({ response, onClose }) {
         },
     };
 
-    // CSS animations as style tag
+    // CSS animations - CORREGIDAS para mostrar texto blanco cuando está clickeado
     const cssAnimations = `
         @keyframes slideIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(-8px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
+            from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
+        
         @keyframes buttonClick2s {
             0% { 
-                background-color: transparent !important; 
+                background-color: ${variant === 'label' ? OPACITY.neutral10 : 'transparent'}; 
                 color: ${COLORS.dark} !important;
-                border-color: ${OPACITY.dark20} !important;
+                border-color: ${variant === 'label' ? OPACITY.dark10 : OPACITY.dark20} !important;
             }
             10% { 
                 background-color: ${COLORS.dark} !important; 
@@ -212,16 +292,17 @@ export function ResponseDisplay({ response, onClose }) {
                 border-color: ${COLORS.dark} !important;
             }
             100% { 
-                background-color: transparent !important;
+                background-color: ${variant === 'label' ? OPACITY.neutral10 : 'transparent'};
                 color: ${COLORS.dark} !important;
-                border-color: ${OPACITY.dark20} !important;
+                border-color: ${variant === 'label' ? OPACITY.dark10 : OPACITY.dark20} !important;
             }
         }
+        
         @keyframes likeButtonClick2s {
             0% { 
-                background-color: transparent !important; 
+                background-color: ${variant === 'label' ? OPACITY.neutral10 : 'transparent'}; 
                 color: ${COLORS.dark} !important;
-                border-color: ${OPACITY.dark20} !important;
+                border-color: ${variant === 'label' ? OPACITY.dark10 : OPACITY.dark20} !important;
             }
             10% { 
                 background-color: ${COLORS.dark} !important; 
@@ -236,58 +317,72 @@ export function ResponseDisplay({ response, onClose }) {
                 transform: scale(1.05);
             }
             100% { 
-                background-color: transparent !important;
+                background-color: ${variant === 'label' ? OPACITY.neutral10 : 'transparent'};
                 color: ${COLORS.dark} !important;
-                border-color: ${OPACITY.dark20} !important;
+                border-color: ${variant === 'label' ? OPACITY.dark10 : OPACITY.dark20} !important;
                 transform: scale(1);
             }
         }
+        
         .button-click-2s {
-            animation: buttonClick2s 2s ease-out !important;
+            animation: buttonClick2s 2s ease-out;
         }
         .like-button-click-2s {
-            animation: likeButtonClick2s 2s ease-out !important;
+            animation: likeButtonClick2s 2s ease-out;
+        }
+        
+        /* Asegurar que el texto sea visible durante la animación */
+        .button-click-2s span,
+        .like-button-click-2s span {
+            color: ${COLORS.light} !important;
+        }
+        
+        .button-click-2s svg,
+        .like-button-click-2s svg {
+            color: ${COLORS.light} !important;
         }
     `;
 
-    // Helper to get button animation class
     const getButtonAnimationClass = (buttonName) => {
         if (clickedButton !== buttonName) return '';
         return buttonName === 'like' ? 'like-button-click-2s' : 'button-click-2s';
     };
 
-    // Helper to get button style based on state
     const getButtonStyle = (buttonName) => {
         const isClicked = clickedButton === buttonName;
-        const isLikeClicked = buttonName === 'like' && isClicked;
+        const baseColor = isClicked ? COLORS.light : COLORS.dark;
+        const backgroundColor = isClicked ? COLORS.dark : styles.buttonBase.background;
+        const borderColor = isClicked ? COLORS.dark : styles.buttonBase.border.slice(-9, -2);
 
         return {
             ...styles.buttonBase,
-            color: isClicked ? COLORS.light : COLORS.dark,
-            background: isClicked ? COLORS.dark : 'transparent',
-            borderColor: isClicked ? COLORS.dark : OPACITY.dark20,
+            color: baseColor,
+            background: backgroundColor,
+            borderColor: borderColor,
         };
     };
 
     return (
-        <div style={styles.container}>
+        <div ref={containerRef} style={styles.container} data-cliro-element="response-display">
             <style>{cssAnimations}</style>
 
             {/* Header */}
             <div style={styles.header}>
                 <span style={styles.headerTitle}>
-                    Response
+                    {variant === 'label' ? 'Respuesta' : 'Response'}
                 </span>
 
                 <button
-                    onClick={onClose}
+                    onClick={handleClose}
                     style={styles.closeButton}
                     aria-label="Close"
                     onMouseEnter={(e) => {
                         e.currentTarget.style.background = OPACITY.dark10;
+                        e.currentTarget.style.color = COLORS.dark;
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.background = 'none';
+                        e.currentTarget.style.color = COLORS.neutral;
                     }}
                 >
                     <X style={styles.icon} size={14} />
@@ -301,7 +396,7 @@ export function ResponseDisplay({ response, onClose }) {
                 </div>
             </div>
 
-            {/* Buttons */}
+            {/* Footer */}
             <div style={styles.footer}>
                 <button
                     onClick={handleCopy}
@@ -312,13 +407,15 @@ export function ResponseDisplay({ response, onClose }) {
                             e.currentTarget.style.background = OPACITY.dark10;
                             e.currentTarget.style.transform = 'translateY(-1px)';
                             e.currentTarget.style.borderColor = OPACITY.dark30;
+                            e.currentTarget.style.color = COLORS.dark;
                         }
                     }}
                     onMouseLeave={(e) => {
                         if (clickedButton !== 'copy') {
-                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.background = getButtonStyle('copy').background;
                             e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.borderColor = OPACITY.dark20;
+                            e.currentTarget.style.borderColor = getButtonStyle('copy').borderColor;
+                            e.currentTarget.style.color = getButtonStyle('copy').color;
                         }
                     }}
                 >
@@ -326,7 +423,7 @@ export function ResponseDisplay({ response, onClose }) {
                         ...styles.icon,
                         color: clickedButton === 'copy' ? COLORS.light : COLORS.dark,
                     }} size={12} />
-                    <span style={styles.buttonText}>
+                    <span style={{ ...styles.buttonText, color: clickedButton === 'copy' ? COLORS.light : COLORS.dark }}>
                         {copyFeedback ? 'Copied!' : 'Copy'}
                     </span>
                 </button>
@@ -340,13 +437,15 @@ export function ResponseDisplay({ response, onClose }) {
                             e.currentTarget.style.background = OPACITY.dark10;
                             e.currentTarget.style.transform = 'translateY(-1px)';
                             e.currentTarget.style.borderColor = OPACITY.dark30;
+                            e.currentTarget.style.color = COLORS.dark;
                         }
                     }}
                     onMouseLeave={(e) => {
                         if (clickedButton !== 'regenerate') {
-                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.background = getButtonStyle('regenerate').background;
                             e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.borderColor = OPACITY.dark20;
+                            e.currentTarget.style.borderColor = getButtonStyle('regenerate').borderColor;
+                            e.currentTarget.style.color = getButtonStyle('regenerate').color;
                         }
                     }}
                 >
@@ -354,7 +453,7 @@ export function ResponseDisplay({ response, onClose }) {
                         ...styles.icon,
                         color: clickedButton === 'regenerate' ? COLORS.light : COLORS.dark,
                     }} size={12} />
-                    <span style={styles.buttonText}>
+                    <span style={{ ...styles.buttonText, color: clickedButton === 'regenerate' ? COLORS.light : COLORS.dark }}>
                         Regenerate
                     </span>
                 </button>
@@ -368,13 +467,15 @@ export function ResponseDisplay({ response, onClose }) {
                             e.currentTarget.style.background = OPACITY.dark10;
                             e.currentTarget.style.transform = 'translateY(-1px)';
                             e.currentTarget.style.borderColor = OPACITY.dark30;
+                            e.currentTarget.style.color = COLORS.dark;
                         }
                     }}
                     onMouseLeave={(e) => {
                         if (clickedButton !== 'like') {
-                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.background = getButtonStyle('like').background;
                             e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.borderColor = OPACITY.dark20;
+                            e.currentTarget.style.borderColor = getButtonStyle('like').borderColor;
+                            e.currentTarget.style.color = getButtonStyle('like').color;
                         }
                     }}
                 >
@@ -382,12 +483,12 @@ export function ResponseDisplay({ response, onClose }) {
                         style={{
                             ...styles.icon,
                             color: clickedButton === 'like' ? COLORS.light : COLORS.dark,
-                            fill: likeFeedback ? COLORS.dark : 'none',
-                            stroke: likeFeedback ? COLORS.dark : (clickedButton === 'like' ? COLORS.light : COLORS.dark),
+                            fill: likeFeedback ? (clickedButton === 'like' ? COLORS.light : COLORS.dark) : 'none',
+                            stroke: clickedButton === 'like' ? COLORS.light : (likeFeedback ? COLORS.dark : COLORS.dark),
                         }}
                         size={12}
                     />
-                    <span style={styles.buttonText}>
+                    <span style={{ ...styles.buttonText, color: clickedButton === 'like' ? COLORS.light : COLORS.dark }}>
                         {likeFeedback ? 'Liked!' : 'Like'}
                     </span>
                 </button>

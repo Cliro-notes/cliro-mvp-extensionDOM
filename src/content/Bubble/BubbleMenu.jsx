@@ -1,5 +1,5 @@
-// /content/BubbleMenu.jsx - MODIFICADO
-import { useState, useEffect } from "react"; // Añadir useEffect
+// /content/BubbleMenu.jsx
+import { useState, useEffect } from "react";
 import {
     BUBBLE_MENU_ITEMS,
     rewriteOptions,
@@ -14,9 +14,9 @@ import { RewriteItem } from "../MenuItems/RewriteItem.jsx";
 import { TranslateItem } from "../MenuItems/TranslateItem.jsx";
 import { MenuItem } from "../MenuItems/MenuItem.jsx";
 
-import LoadingAnimation from "../MenuItems/LoadingAnimation.jsx";
+import { LoadingAnimation } from "../MenuItems/LoadingAnimation.jsx";
 import { TextPreview } from './TextPreview.jsx';
-import { ResponseDisplay } from './ResponseDisplay.jsx';
+import { ResponseDisplay } from '../MenuItems/ResponseDisplay.jsx';
 import { sendAIRequest } from "../../shared/api.js";
 import { StateService } from "../../shared/stateService.js";
 import { SPACING } from "../../shared/constants/colors.js";
@@ -26,6 +26,10 @@ export function BubbleMenu({ originalText, onClose, isSelected }) {
     const [response, setResponse] = useState(null);
     const [xrayEnabled, setXrayEnabled] = useState(false);
     const [xrayErrorCount, setXrayErrorCount] = useState(XRAY_DEFAULT_ERROR_COUNT);
+
+    const [showResponse, setShowResponse] = useState(false);
+    const [currentResponse, setCurrentResponse] = useState(null);
+
     const hasText = Boolean(originalText);
 
     // Cargar estado inicial de X-ray
@@ -68,11 +72,12 @@ export function BubbleMenu({ originalText, onClose, isSelected }) {
         setLoading(true);
         console.log("ACTION:", { action, payload, originalText });
         const aiResponse = await sendAIRequest(action, payload, originalText);
-        setResponse(aiResponse);
+        setCurrentResponse(aiResponse);
+        setShowResponse(true);
         setLoading(false);
     };
 
-    // NUEVO HANDLER PARA OCULTAR BURBUJA
+    // HANDLER PARA OCULTAR BURBUJA
     const handleHideBubble = async () => {
         await StateService.setBubbleVisibility(false);
         onClose?.();
@@ -107,7 +112,9 @@ export function BubbleMenu({ originalText, onClose, isSelected }) {
     };
 
     const handleCloseResponse = () => {
-        setResponse(null);
+        console.log('BubbleMenu: Closing response, going back to menu');
+        setShowResponse(false);
+        setCurrentResponse(null);
     };
 
     const styles = {
@@ -121,18 +128,28 @@ export function BubbleMenu({ originalText, onClose, isSelected }) {
     return (
         <div onClick={(e) => e.stopPropagation()} style={styles.container}>
             {loading ? (
-                // <LoadingAnimation />
-                <ResponseDisplay response={"HOLA ESTO ES UN TEST, DE UN TEXTO PEQUENO"} onClose={handleCloseResponse} />
-            ) : response ? (
-                <ResponseDisplay response={response} onClose={handleCloseResponse} />
+                <ResponseDisplay
+                    response={"HOLA ESTO ES UN TEST, DE UN TEXTO PEQUENO"}
+                    onClose={onClose} // Si cierra desde loading, cierra todo
+                    variant="bubble"
+                    onBackToMenu={handleCloseResponse}
+                />
+            ) : showResponse ? (
+                <ResponseDisplay
+                    response={currentResponse}
+                    onClose={onClose} // Cierra completamente el BubbleMenu
+                    variant="bubble"
+                    onBackToMenu={handleCloseResponse} // Regresa al menú
+                />
             ) : (
+                // Menú normal
                 <div>
                     {hasText && <TextPreview text={originalText} />}
 
                     <XRayItem
-                        xrayEnabled={xrayEnabled}          // Cambiado de xrayOn
-                        xrayErrorCount={xrayErrorCount}   // Nuevo prop
-                        onToggle={handleToggleXray}       // Usa nuevo handler
+                        xrayEnabled={xrayEnabled}
+                        xrayErrorCount={xrayErrorCount}
+                        onToggle={handleToggleXray}
                     />
 
                     {BUBBLE_MENU_ITEMS.textActions.map(item => (
@@ -155,12 +172,11 @@ export function BubbleMenu({ originalText, onClose, isSelected }) {
                         onLanguageClick={handleLanguageClick}
                     />
 
-                    {/* CAMBIAR "Ocultar" a "Hide Bubble" */}
                     <MenuItem
                         id={BUBBLE_MENU_ITEMS.active.id}
                         icon={getIcon(BUBBLE_MENU_ITEMS.active.icon)}
-                        label="Hide Bubble" // Cambiar label
-                        onClick={handleHideBubble} // Usar nuevo handler
+                        label="Hide Bubble"
+                        onClick={handleHideBubble}
                     />
                 </div>
             )}

@@ -1,4 +1,4 @@
-// Bubble.jsx - COMPLETO
+// Bubble.jsx
 import { useState, useRef, useEffect } from "react";
 import { BubbleMenu } from "./BubbleMenu.jsx";
 import { StateService } from "../../shared/stateService.js";

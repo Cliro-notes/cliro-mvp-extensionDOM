@@ -1,4 +1,4 @@
-// components/ContextManager.js
+// content/Setup/ContextManager.js
 export class ContextManager {
     constructor() {
         this.context = {

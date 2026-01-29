@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import LoadingAnimation from '../MenuItems/LoadingAnimation.jsx';
-import LabelSubmenu from './LabelSubmenu.jsx';
+import { LoadingAnimation } from '../MenuItems/LoadingAnimation.jsx';
+import { LabelSubmenu } from './LabelSubmenu.jsx';
 import { COLORS, OPACITY, SPACING, RADIUS, TYPOGRAPHY, ANIMATION } from '../../shared/constants/colors.js';
 import {
     LABEL_MENU_ITEMS,
@@ -11,6 +11,7 @@ import {
     getTranslateSubmenuItems,
     getIcon
 } from '../MenuItems/constants.js';
+import { ResponseDisplay } from '../MenuItems/ResponseDisplay.jsx';
 
 export default function LabelMenu({ selectedText, onClose }) {
     const [loading, setLoading] = useState(false);
@@ -23,9 +24,9 @@ export default function LabelMenu({ selectedText, onClose }) {
     const handleAction = async (action, payload = null) => {
         setLoading(true);
         console.log("ACTION:", { action, payload, selectedText });
-        // const aiResponse = await sendAIRequest(action, payload, selectedText);
-        // setResponse(aiResponse);
-        await new Promise(r => setTimeout(r, 800)); // Simulate API call
+        const aiResponse = await sendAIRequest(action, payload, selectedText);
+        setResponse(aiResponse);
+        await new Promise(r => setTimeout(r, 800));
         setLoading(false);
         setActiveSubmenu(null);
         if (onClose) onClose();
@@ -215,7 +216,24 @@ export default function LabelMenu({ selectedText, onClose }) {
         );
     };
 
-    if (loading) return <LoadingAnimation />;
+    if (loading) {
+        return (
+            // <LoadingAnimation />
+            <ResponseDisplay
+                response={"HOLA ESTO ES UNA PRUEBA"}
+                variant="label"
+            />
+        )
+    }
+
+    if (response) {
+        return (
+            <ResponseDisplay
+                response={response}
+                variant="label"
+            />
+        );
+    }
 
     const menuItems = getLabelMenuItems();
 

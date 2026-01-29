@@ -1,4 +1,4 @@
-// components/setupListeners.js
+// content/Setup/setupListeners.js
 export function setupInputListeners(contextManager) {
     const inputSelectors = [
         'input[type="text"]',

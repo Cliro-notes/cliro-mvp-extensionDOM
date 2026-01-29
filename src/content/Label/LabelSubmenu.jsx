@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { COLORS, SPACING, RADIUS, TYPOGRAPHY, ANIMATION } from '../../shared/constants/colors.js';
 
-export default function LabelSubmenu({
+export function LabelSubmenu({
     label,
     items,
     loading,
