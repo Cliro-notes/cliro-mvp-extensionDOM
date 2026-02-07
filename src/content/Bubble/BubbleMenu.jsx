@@ -125,32 +125,46 @@ export function BubbleMenu({ originalText, onClose, isSelected }) {
         }
     };
 
+    const XRAY_FEATURE_ENABLED = false;
+
     return (
         <div onClick={(e) => e.stopPropagation()} style={styles.container}>
             {loading ? (
-                <ResponseDisplay
-                    response={"HOLA ESTO ES UN TEST, DE UN TEXTO PEQUENO"}
-                    onClose={onClose} // Si cierra desde loading, cierra todo
-                    variant="bubble"
-                    onBackToMenu={handleCloseResponse}
-                />
+                <LoadingAnimation />
+                // <ResponseDisplay
+                //     response={"Artificial intelligence drives economic efficiency but creates ethical and labor concerns that require collaborative regulation to protect citizens"}
+                //     onClose={onClose}
+                //     variant="bubble"
+                //     onBackToMenu={handleCloseResponse}
+                // />
             ) : showResponse ? (
                 <ResponseDisplay
                     response={currentResponse}
-                    onClose={onClose} // Cierra completamente el BubbleMenu
+                    onClose={onClose}
                     variant="bubble"
-                    onBackToMenu={handleCloseResponse} // Regresa al menú
+                    onBackToMenu={handleCloseResponse}
                 />
             ) : (
                 // Menú normal
                 <div>
-                    {hasText && <TextPreview text={originalText} />}
+                    {isSelected && <TextPreview text={originalText} />}
 
-                    <XRayItem
-                        xrayEnabled={xrayEnabled}
-                        xrayErrorCount={xrayErrorCount}
-                        onToggle={handleToggleXray}
-                    />
+                    {XRAY_FEATURE_ENABLED ? (
+                        <XRayItem
+                            xrayEnabled={xrayEnabled}
+                            xrayErrorCount={xrayErrorCount}
+                            onToggle={handleToggleXray}
+                        />
+                    ) : (
+                        <MenuItem
+                            id="xray-coming-soon"
+                            icon="◎"
+                            label="X-ray Coming Soon..."
+                            badge="SOON"
+                            onClick={() => { }}
+                            disabled={true}
+                        />
+                    )}
 
                     {BUBBLE_MENU_ITEMS.textActions.map(item => (
                         <TextActionItem

@@ -1,9 +1,10 @@
 import { MenuItem } from "./MenuItem";
 import { SubItem } from "./SubItem";
 import { rewriteOptions, getIcon } from "./constants.js";
+import { BUBBLE_MENU_ITEMS } from "./constants.js";
 
 export const RewriteItem = ({ hasText, onOptionClick }) => {
-    const label = hasText ? "Reescribir" : "Reescribir Todo";
+    const label = BUBBLE_MENU_ITEMS.rewrite.label(hasText);
 
     return (
         <MenuItem

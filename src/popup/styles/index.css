@@ -4,8 +4,9 @@
 /* Updated CSS with proper variables and sticky background */
 :root {
     --color-dark: #0d0906;
-    --color-neutral: #7d7d7d;
-    --color-light: #ffffff;
+    --color-neutral: #6e6e6e;
+    /* --color-light: #ffffff; */
+    --color-light: #F5F5F5;
     --color-status-good: #10b981;
     --color-status-warning: #f59e0b;
     --color-status-attention: #ef4444;

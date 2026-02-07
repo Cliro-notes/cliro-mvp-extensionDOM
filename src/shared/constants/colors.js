@@ -1,8 +1,8 @@
 export const COLORS = {
     // Main colors
     dark: '#0d0906',
-    neutral: '#7D7D7D',
-    light: '#ffffff',
+    neutral: '#6e6e6e',
+    light: '#F5F5F5',
     
     // Status colors
     statusGood: '#10b981',

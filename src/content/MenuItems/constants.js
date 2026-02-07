@@ -21,18 +21,18 @@ export const icons = {
 
 export const rewriteOptions = [
     { id: "formal", label: "Formal" },
-    { id: "concise", label: "Conciso" },
+    { id: "concise", label: "Concise" },
     { id: "casual", label: "Casual" },
-    { id: "expand", label: "Texto" }
+    { id: "friendly", label: "Friendly" }
 ];
 
 export const languages = [
-    { name: "Español", code: "ES", lang: "Spanish" },
-    { name: "Inglés", code: "EN", lang: "English" },
-    { name: "Francés", code: "FR", lang: "French" },
-    { name: "Alemán", code: "DE", lang: "German" },
-    { name: "Italiano", code: "IT", lang: "Italian" },
-    { name: "Portugués", code: "PT", lang: "Portuguese" }
+    { name: "Spanish", code: "ES", lang: "Spanish" },
+    { name: "English", code: "EN", lang: "English" },
+    { name: "French", code: "FR", lang: "French" },
+    { name: "German", code: "DE", lang: "German" },
+    { name: "Italian", code: "IT", lang: "Italian" },
+    { name: "Portuguese", code: "PT", lang: "Portuguese" }
 ];
 
 export const BUBBLE_MENU_ITEMS = {
@@ -48,13 +48,13 @@ export const BUBBLE_MENU_ITEMS = {
       id: "summary",
       icon: "summary",
       action: "SUMMARIZE",
-      label: (hasText) => hasText ? "Resumir" : "Resumir Todo",
+      label: (hasText) => hasText ? "Summary" : "Summary All",
     },
     {
       id: "explain",
       icon: "explain",
       action: "EXPLAIN",
-      label: (hasText) => hasText ? "Explicar / Definir" : "Explicar / Definir Todo",
+      label: (hasText) => hasText ? "Explain / Define" : "Explain / Define All",
     },
   ],
 
@@ -63,6 +63,7 @@ export const BUBBLE_MENU_ITEMS = {
     type: "submenu",
     action: "REWRITE",
     icon: "rewrite",
+    label: (hasText) => hasText ? "Rewrite" : "Rewrite All",
   },
 
   translate: {
@@ -70,12 +71,13 @@ export const BUBBLE_MENU_ITEMS = {
     type: "submenu",
     action: "TRANSLATE",
     icon: "translate",
+    label: (hasText) => hasText ? "Translate" : "Translate All",
   },
 
   active: {
     id: "active",
     icon: "active",
-    label: "Ocultar",
+    label: "Hide Bubble",
     action: "ACTIVE_TOGGLE",
   },
 };
@@ -85,26 +87,26 @@ export const LABEL_MENU_ITEMS = {
     id: "summary",
     icon: "summary",
     action: "SUMMARIZE",
-    label: "Resumir"
+    label: "Summary"
   },
   explain: {
     id: "explain",
     icon: "explain",
     action: "EXPLAIN",
-    label: "Explicar / Definir"
+    label: "Explain / Define"
   },
   rewrite: {
     id: "rewrite",
     type: "submenu",
     action: "REWRITE",
-    label: "Reescribir",
+    label: "Rewrite",
     icon: "rewrite",
   },
   translate: {
     id: "translate",
     type: "submenu",
     action: "TRANSLATE",
-    label: "Traducir",
+    label: "Translate",
     icon: "translate",
   },
   more: {

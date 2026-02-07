@@ -39,13 +39,13 @@ export function createAppRenderer(contextManager, getImageUrl) {
     const render = (context) => {
         root.render(
             <React.StrictMode>
-                {context.isSelected && context.selectionTopPosition && (
+                {/* {context.isSelected && context.selectionTopPosition && (
                     <SelectionLabel
                         selectedText={context.selectedText}
                         x={context.selectionTopPosition.x}
                         y={context.selectionTopPosition.y}
                     />
-                )}
+                )} */}
 
                 <Bubble
                     isSelected={context.isSelected}

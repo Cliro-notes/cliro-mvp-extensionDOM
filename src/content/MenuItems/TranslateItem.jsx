@@ -1,9 +1,10 @@
 import { MenuItem } from "./MenuItem";
 import { SubItem } from "./SubItem";
 import { languages, getIcon } from "./constants.js";
+import { BUBBLE_MENU_ITEMS } from "./constants.js";
 
 export const TranslateItem = ({ hasText, onLanguageClick }) => {
-    const label = hasText ? "Traducir" : "Traducir Todo";
+    const label = BUBBLE_MENU_ITEMS.translate.label(hasText);
 
     return (
         <MenuItem

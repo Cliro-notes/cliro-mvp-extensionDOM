@@ -266,7 +266,7 @@ export default function Bubble({ isSelected, originalText, getImageUrl, onOpenCh
             background: 'inherit',
         },
         image: {
-            width: "85%",
+            width: "80%",
             objectFit: "contain",
             pointerEvents: "none",
         },
